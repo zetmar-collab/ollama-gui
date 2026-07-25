@@ -1,5 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
+import { promises as fsp } from 'fs'
 import {
   getSettings,
   setSettings,
@@ -259,6 +260,32 @@ ipcMain.handle('rag:clear', () => {
   return ragStatus()
 })
 
+// Tryb przechwytywania zrzutow ekranu (uruchamiany zmienna CAPTURE_SHOTS).
+// Robi zrzuty samego okna aplikacji (capturePage) do plikow PNG - bez reszty pulpitu.
+async function captureShots(): Promise<void> {
+  const wc = mainWindow!.webContents
+  const dir = process.env.CAPTURE_DIR || join(__dirname, '../../docs/screenshots')
+  await fsp.mkdir(dir, { recursive: true })
+  const shots: [string, number][] = [
+    ['01-chat', 0],
+    ['02-models', 1],
+    ['03-runner', 2],
+    ['04-settings', 3],
+    ['05-help', 4]
+  ]
+  const delay = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms))
+  await delay(1800)
+  for (const [name, idx] of shots) {
+    await wc.executeJavaScript(
+      `(() => { const n = document.querySelectorAll('.nav-item')[${idx}]; if (n) n.click(); })()`
+    )
+    await delay(900)
+    const img = await wc.capturePage()
+    await fsp.writeFile(join(dir, `${name}.png`), img.toPNG())
+  }
+  app.quit()
+}
+
 // ---------- lifecycle ----------
 app.whenReady().then(() => {
   createWindow()
@@ -267,6 +294,14 @@ app.whenReady().then(() => {
   if (proxy.enabled) {
     startProxy(proxy.port).catch(() => {
       /* status pokaze blad w UI */
+    })
+  }
+  if (process.env.CAPTURE_SHOTS) {
+    mainWindow?.webContents.once('did-finish-load', () => {
+      captureShots().catch((e) => {
+        console.error('capture error', e)
+        app.quit()
+      })
     })
   }
   app.on('activate', () => {

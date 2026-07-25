@@ -2,6 +2,18 @@
 
 Lokalne GUI dla [Ollamy](https://ollama.com) na Windows — zbudowane w Electron + React + TypeScript.
 
+📥 **[Pobierz instalator (Releases)](https://github.com/zetmar-collab/ollama-gui/releases/latest)**
+
+## Zrzuty ekranu
+
+| Czat | Modele |
+|:---:|:---:|
+| ![Czat](docs/screenshots/01-chat.png) | ![Modele](docs/screenshots/02-models.png) |
+| **Uruchom (Claude Code / Codex)** | **Ustawienia** |
+| ![Uruchom](docs/screenshots/03-runner.png) | ![Ustawienia](docs/screenshots/04-settings.png) |
+
+![Pomoc](docs/screenshots/05-help.png)
+
 ## Funkcje
 
 - **💬 Czat** — okno rozmowy ze streamingiem odpowiedzi i wyborem modelu z listy. Historia rozmów
