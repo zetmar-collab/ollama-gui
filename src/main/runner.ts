@@ -28,12 +28,18 @@ export function launchTool(params: LaunchParams): { command: string } {
 
   // Otwieramy nowe okno cmd, ktore zostaje otwarte (/k), aby uzytkownik
   // widzial narzedzie. Nowe okno dziedziczy przekazane env.
-  const child = spawn('cmd.exe', ['/c', 'start', '"Ollama GUI"', 'cmd', '/k', command], {
+  //
+  // WAZNE: budujemy cala linie polecen recznie i wylaczamy escapowanie Node
+  // (windowsVerbatimArguments). Gdyby przekazac tytul i polecenie jako osobne
+  // argumenty, Node otoczylby je dodatkowymi cudzyslowami ("\"Ollama GUI\""),
+  // a cmd rozbilby to na dwa tokeny i probowal uruchomic plik o nazwie 'GUI\'.
+  const line = `start "Ollama GUI" cmd /k ${command}`
+  const child = spawn('cmd.exe', ['/c', line], {
     env,
     cwd: params.cwd || process.env.USERPROFILE || undefined,
     detached: true,
     windowsHide: false,
-    shell: false
+    windowsVerbatimArguments: true
   })
   child.unref()
 

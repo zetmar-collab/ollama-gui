@@ -1,6 +1,6 @@
 {
   "name": "ollama-gui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lokalne GUI dla Ollamy na Windows - chat, zarzadzanie modelami i uruchamianie narzedzi (Claude Code, Codex) na silniku Ollamy.",
   "main": "./out/main/index.js",
   "author": "Marek",
